@@ -1,15 +1,23 @@
-const mongoose=require('mongoose');
-const app=require('./app');
+const mongoose = require('mongoose');
+const app = require('./app');
 require('dotenv').config();
-mongoose.connect(process.env.MONGO_URI)
-.then(()=>{
-    console.log("Connected to DataBase!");
-    app.listen(process.env.PORT,()=>{
-        console.log("Server is running on port " +process.env.PORT);
-    });
-})
 
-.catch((error)=>{
-    console.log('Connection failed!');
-    console.log(error);
-})
+const PORT = process.env.PORT || 3000;
+const MONGO_URI = process.env.MONGO_URI;
+
+if (!MONGO_URI) {
+    console.error('Error: MONGO_URI is not defined in the .env file');
+    process.exit(1); // Exit if MONGO_URI is missing
+}
+
+mongoose.connect(MONGO_URI)
+    .then(() => {
+        console.log("Connected to the database!");
+        app.listen(PORT, () => {
+            console.log(`Server is running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('Database connection failed!', error.message);
+        process.exit(1); // Exit the process if DB connection fails
+    });
